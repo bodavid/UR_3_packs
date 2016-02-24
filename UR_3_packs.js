@@ -4,7 +4,6 @@
  * and open the template in the editor.
  */
 
-
 var makePacket = function() {
 //  AudioContext = window.AudioContext || webkitAudioContext;
 //  var audioCtx = new AudioContext();
@@ -15,29 +14,50 @@ var makePacket = function() {
   var button = document.querySelector('button');
   var pre = document.querySelector('pre');
   var myScript = document.querySelector('script');
-
+  var pack = [{}, {}, {}];
   pre.innerHTML = myScript.innerHTML;
 
   // Stereo
   var channels = 1;
+  var duration = 2;
   // Create an empty two second stereo buffer at the
   // sample rate of the AudioContext
-  var frameCount = audioCtx.sampleRate * 2.0;
+  var frameCount = audioCtx.sampleRate * duration;
 
   var myArrayBuffer = audioCtx.createBuffer(channels, frameCount, audioCtx.sampleRate);
 
-  button.onclick = function() {
+  var allBlocks = document.getElementsByClassName("allBlocks")[0];
+
+  var playPacks = function() {
     // Fill the buffer with white noise;
     //just random values between -1.0 and 1.0
     for (var channel = 0; channel < channels; channel++) {
      // This gives us the actual ArrayBuffer that contains the data
      var nowBuffering = myArrayBuffer.getChannelData(channel);
-     for (var i = 0; i < frameCount; i++) {
+     pack[0].freq = 2 * Math.PI / audioCtx.sampleRate * (1200 + 5200 * Math.random());
+     pack[0].shift = audioCtx.sampleRate * .5;
+     pack[0].span = 1/audioCtx.sampleRate * Math.random();
+     
+     pack[1].freq = 2 * Math.PI / audioCtx.sampleRate * (200 + 15200 * Math.random());
+     pack[1].shift = audioCtx.sampleRate * (1.2 + 0.6 * Math.random());
+     pack[1].span = 1/audioCtx.sampleRate * Math.random();
+     
+     pack[2].freq = pack[0].freq;
+     pack[2].shift = audioCtx.sampleRate * 1.5;
+     pack[2].span = pack[0].span;
+     
+      for (var i = 0; i < frameCount; i++) {
        // Math.random() is in [0; 1.0]
        // audio needs to be in [-1.0; 1.0]
 //       nowBuffering[i] = Math.random() * 2 - 1;
-       nowBuffering[i] = Math.sin(15*x)*Math.exp(-Math.pow(x-Math.PI,2));
-     }
+        var sample = 0;
+        for (var j = 0; j < pack.length; j++) {
+           sample += Math.sin(pack[j].freq * i) * Math.exp(-pack[j].span * Math.pow(i - pack[j].shift, 2))/3
+//                       + Math.sin(pack[1].freq * i) * Math.exp(-Math.pow(i - pack[1].shift, 2))/3
+//                       + Math.sin(pack[2].freq * i) * Math.exp(-Math.pow(i - pack[2].shift, 2))/3;
+        }
+        nowBuffering[i] = sample;
+      }
     }
 
     // Get an AudioBufferSourceNode.
@@ -51,6 +71,8 @@ var makePacket = function() {
     // start the source playing
     source.start();
   }
+  button.onclick = playPacks;
+  allBlocks.addEventListener('click', playPacks, false);
 }
 
 var drawPacket = function () {
@@ -147,3 +169,4 @@ var drawPacket = function () {
   }
   WavePacket.Trig.init()    
 };
+
