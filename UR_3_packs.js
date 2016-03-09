@@ -4,77 +4,62 @@
  * and open the template in the editor.
  */
 
-var makePacket = function() {
-//  AudioContext = window.AudioContext || webkitAudioContext;
-//  var audioCtx = new AudioContext();
-//  var duration = 1;
-//  var buffer = audioCtx.createBuffer(1, audioCtx.sampleRate * duration, audioCtx.sampleRate);
-  
+var make3Packets = function() {
   var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  var button = document.querySelector('button');
-  var pre = document.querySelector('pre');
-  var myScript = document.querySelector('script');
+  var button = document.getElementById('play3packs');
   var pack = [{}, {}, {}];
-  pre.innerHTML = myScript.innerHTML;
+  var playing = false;
 
-  // Stereo
+  // Mono
   var channels = 1;
-  var duration = 2;
-  // Create an empty two second stereo buffer at the
+  // Create a two second buffer at the
   // sample rate of the AudioContext
+  var duration = 2;
   var frameCount = audioCtx.sampleRate * duration;
-
   var myArrayBuffer = audioCtx.createBuffer(channels, frameCount, audioCtx.sampleRate);
 
   var allBlocks = document.getElementsByClassName("allBlocks")[0];
 
   var playPacks = function() {
-    // Fill the buffer with white noise;
-    //just random values between -1.0 and 1.0
+    if (playing) return;
+    playing = true;
+    // Fill the buffer with values between -1.0 and 1.0
     for (var channel = 0; channel < channels; channel++) {
-     // This gives us the actual ArrayBuffer that contains the data
-     var nowBuffering = myArrayBuffer.getChannelData(channel);
-     pack[0].freq = 2 * Math.PI / audioCtx.sampleRate * (1200 + 5200 * Math.random());
-     pack[0].shift = audioCtx.sampleRate * .5;
-     pack[0].span = 1/audioCtx.sampleRate * Math.random();
-     
-     pack[1].freq = 2 * Math.PI / audioCtx.sampleRate * (200 + 15200 * Math.random());
-     pack[1].shift = audioCtx.sampleRate * (1.2 + 0.6 * Math.random());
-     pack[1].span = 1/audioCtx.sampleRate * Math.random();
-     
-     pack[2].freq = pack[0].freq;
-     pack[2].shift = audioCtx.sampleRate * 1.5;
-     pack[2].span = pack[0].span;
-     
+      // This gives us the actual ArrayBuffer that contains the data
+      var nowBuffering = myArrayBuffer.getChannelData(channel);
+      pack[0].freq = 2 * Math.PI / audioCtx.sampleRate * (1200 + 5200 * Math.random());
+      pack[0].shift = audioCtx.sampleRate * .5;
+      pack[0].span = 1/audioCtx.sampleRate * Math.random();
+
+      pack[1].freq = 2 * Math.PI / audioCtx.sampleRate * (200 + 15200 * Math.random());
+      pack[1].shift = audioCtx.sampleRate * (1.2 + 0.6 * Math.random());
+      pack[1].span = 1/audioCtx.sampleRate * Math.random();
+
+      pack[2].freq = pack[0].freq;
+      pack[2].shift = audioCtx.sampleRate * 1.5;
+      pack[2].span = pack[0].span;
+
       for (var i = 0; i < frameCount; i++) {
-       // Math.random() is in [0; 1.0]
-       // audio needs to be in [-1.0; 1.0]
-//       nowBuffering[i] = Math.random() * 2 - 1;
         var sample = 0;
         for (var j = 0; j < pack.length; j++) {
-           sample += Math.sin(pack[j].freq * i) * Math.exp(-pack[j].span * Math.pow(i - pack[j].shift, 2))/3
-//                       + Math.sin(pack[1].freq * i) * Math.exp(-Math.pow(i - pack[1].shift, 2))/3
-//                       + Math.sin(pack[2].freq * i) * Math.exp(-Math.pow(i - pack[2].shift, 2))/3;
+          sample += Math.sin(pack[j].freq * i) * Math.exp(-pack[j].span * Math.pow(i - pack[j].shift, 2))/2
         }
         nowBuffering[i] = sample;
       }
     }
 
-    // Get an AudioBufferSourceNode.
-    // This is the AudioNode to use when we want to play an AudioBuffer
     var source = audioCtx.createBufferSource();
-    // set the buffer in the AudioBufferSourceNode
     source.buffer = myArrayBuffer;
-    // connect the AudioBufferSourceNode to the
-    // destination so we can hear the sound
     source.connect(audioCtx.destination);
-    // start the source playing
     source.start();
+    source.onended = function() {
+      playing = false;
+    }
   }
   button.onclick = playPacks;
-  allBlocks.addEventListener('click', playPacks, false);
+  allBlocks.addEventListener('click', playPacks, false); 
 }
-
+ 
 var drawPacket = function () {
   //Writes a wave packet
 
@@ -102,7 +87,7 @@ var drawPacket = function () {
 
       context = canvas.getContext("2d");
       context.font = '18px sans-serif';
-      context.strokeStyle = '#fff';
+      context.strokeStyle = '#00f';
       context.lineJoin = 'round';
 
       height = canvas.height;

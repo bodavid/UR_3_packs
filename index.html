@@ -9,11 +9,18 @@
     <script src="./UR_3_packs.js"></script>
 
   </head>
-  <body onload="makePacket();">
-    <div>UR Testing</div>
-
+  <body onload="make3Packets();">
     <div class="container containerTop">
-      Position the second pulse
+      Absolute sense of pitch uncertainty relation test
+    </div>
+    <div class="container containerTop">
+      Position the second and third pulse
+    </div>
+    <div  class="container containerTop">
+      <button id="play3packs">Play three packets</button>
+    </div>
+    <div class="container containerTop">
+        <canvas id="sineCanvas" style="width: 100px; height: 100px;" width="100" height="100"></canvas>
     </div>
 
     <div class="allBlocks">
@@ -25,7 +32,6 @@
       <div class="container containerMid">
         <div class="first"></div>
         <div class="second">
-          <canvas id="sineCanvas" style="width: 100px; height: 100px;" width="100" height="100"></canvas>
         </div>
         <div class="third"></div>
       </div>
@@ -36,15 +42,38 @@
       </div>
     </div>
     
-    <div class="center">
-      <button id="play3packs">Play three packets</button>
-    </div>
-    
     <div>
       <pre>
         
       </pre>
     </div>
+    
+  <hr>
+    
+    <div class="container containerTop">
+      Relative sense of pitch uncertainty relation test
+    </div>
+    <div  class="container containerTop">
+      <button id="play2packs">Play two packets</button>
+    </div>
+    <div class="container containerTop">
+      Determine the relation between two pulses
+    </div>
+    <div  class="container containerTop">
+      <button id="pitchAndTimeDifference">Pitch and time difference</button>
+    </div>
+    <div  class="container containerTop">
+      <button id="pitchDifferenceSameTime">Pitch difference at the same time</button>
+    </div>
+    <div  class="container containerTop">
+      <button id="pitchSameTimeDifference">Pitch the same and time differences</button>
+    </div>
+    <div  class="container containerTop">
+      <button id="pitchAndTimeSame">Pitch and time the same, like one tone only</button>
+    </div>
+    
+    
+    
     
   </body>
 </html>

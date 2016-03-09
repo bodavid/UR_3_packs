@@ -12,6 +12,10 @@ and open the template in the editor.
   display:flex;
   justify-content:center;
 }
+
+allBlocks, container {
+  display: fit-content;
+}
 .containerTop > div {
   margin:0px;
   background-color:#bada55;
