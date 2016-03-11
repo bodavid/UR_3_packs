@@ -6,7 +6,9 @@
 
 var make3Packets = function() {
   var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  var button = document.getElementById('play3packs');
+  var button3 = document.getElementById('play3packs');
+  var button2 = document.getElementById('play2packs');
+  var packs;
   var pack = [{}, {}, {}];
   var playing = false;
 
@@ -20,8 +22,11 @@ var make3Packets = function() {
 
   var allBlocks = document.getElementsByClassName("allBlocks")[0];
 
-  var playPacks = function() {
+  var play3Packs = function() {
     if (playing) return;
+    duration = 2;
+    frameCount = audioCtx.sampleRate * duration;
+    packs = 3;
     playing = true;
     // Fill the buffer with values between -1.0 and 1.0
     for (var channel = 0; channel < channels; channel++) {
@@ -51,13 +56,55 @@ var make3Packets = function() {
     var source = audioCtx.createBufferSource();
     source.buffer = myArrayBuffer;
     source.connect(audioCtx.destination);
-    source.start();
     source.onended = function() {
       playing = false;
     }
+    source.start();
   }
-  button.onclick = playPacks;
-  allBlocks.addEventListener('click', playPacks, false); 
+
+  var play2Packs = function() {
+    if (playing) return;
+    packs = 2;
+    duration = 1;
+    frameCount = audioCtx.sampleRate * duration;
+    playing = true;
+    // Fill the buffer with values between -1.0 and 1.0
+    for (var channel = 0; channel < channels; channel++) {
+      // This gives us the actual ArrayBuffer that contains the data
+      var nowBuffering = myArrayBuffer.getChannelData(channel);
+      pack[0].freq = 2 * Math.PI / audioCtx.sampleRate * (1200 + 5200 * Math.random());
+      pack[0].shift = audioCtx.sampleRate * .5;
+      pack[0].span = 1/audioCtx.sampleRate * Math.random();
+
+      pack[1].freq = 2 * Math.PI / audioCtx.sampleRate * (200 + 15200 * Math.random());
+      pack[1].shift = audioCtx.sampleRate * (0.2 + 0.6 * Math.random());
+      pack[1].span = 1/audioCtx.sampleRate * Math.random();
+
+      for (var i = 0; i < frameCount; i++) {
+        var sample = 0;
+        for (var j = 0; j < pack.length; j++) {
+          sample += Math.sin(pack[j].freq * i) * Math.exp(-pack[j].span * Math.pow(i - pack[j].shift, 2))/2
+        }
+        nowBuffering[i] = sample;
+      }
+    }
+
+    var source = audioCtx.createBufferSource();
+    source.buffer = myArrayBuffer;
+    source.connect(audioCtx.destination);
+    source.onended = function() {
+      playing = false;
+    }
+    source.start(0, 0, 1);
+  }
+
+  button2.onclick = play2Packs;
+  var buttons2 = document.getElementsByClassName("packs2");
+  for (var i = 0; i < buttons2.length; i++) {
+      buttons2[i].addEventListener('click', play2Packs, false);
+  }  
+  button3.onclick = play3Packs;
+  allBlocks.addEventListener('click', play3Packs, false); 
 }
  
 var drawPacket = function () {
