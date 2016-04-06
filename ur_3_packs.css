@@ -16,7 +16,7 @@ and open the template in the editor.
 allBlocks, container {
   display: fit-content;
 }
-.containerTop > div {
+.containerTop, .containerBottom > div {
   margin:0px;
   background-color:#bada55;
   height: 200px;
