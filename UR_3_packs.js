@@ -4,7 +4,8 @@
  * and open the template in the editor.
  */
 
-var make3Packets = function() {
+var UncertaintyRelationsPackets = function() {
+  var urpThis = this
   var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   var button3 = document.getElementById('play3packs');
   var button2 = document.getElementById('play2packs');
@@ -17,24 +18,45 @@ var make3Packets = function() {
   // Create a two second buffer at the
   // sample rate of the AudioContext
   var duration = 2;
+  var improveWhenCorrect = .7;
+  var worsenWhenWrong = 1.1;
   var frameCount = audioCtx.sampleRate * duration;
   var myArrayBuffer = audioCtx.createBuffer(channels, frameCount, audioCtx.sampleRate);
 
   var allBlocks = document.getElementsByClassName("allBlocks")[0];
-
-  var play3Packs = function() {
+  
+  this.pack2 = {
+    duration: 1,
+    uncertainty: 2,
+    ur2pText: document.getElementById("ur2p")
+  };
+  this.pack3 = {
+    duration: 2,
+    urTime: 2,
+    urFrequency: 2,
+    packs: 3,
+    ur3pText: document.getElementById("ur3p"),
+    toneOneFrequency: 2 * Math.PI / audioCtx.sampleRate * (1200 + 5200 * Math.random()),
+    toneOneSpan: 1/audioCtx.sampleRate * Math.random(),
+  };
+  var play3Packs = function(event) {
     if (playing) return;
-    duration = 2;
-    frameCount = audioCtx.sampleRate * duration;
-    packs = 3;
+    frameCount = audioCtx.sampleRate * urpThis.pack3.duration;
     playing = true;
+    urpThis.pack3.urTime *= (event.target.classList.contains(urpThis.pack3.xClass)) ? improveWhenCorrect : worsenWhenWrong;
+    urpThis.pack3.urFrequency *= (event.target.parentNode.classList.contains(urpThis.pack3.yClass)) ? improveWhenCorrect : worsenWhenWrong;    
+//    var urTime = 1.53;
+//    var urFrequency = 1.53;
+    var txt = document.createTextNode(Math.sqrt(urpThis.pack3.urFrequency * urpThis.pack3.urTime).toFixed(5));
+    urpThis.pack3.ur3pText.innerText = txt.textContent;
     // Fill the buffer with values between -1.0 and 1.0
+
     for (var channel = 0; channel < channels; channel++) {
       // This gives us the actual ArrayBuffer that contains the data
       var nowBuffering = myArrayBuffer.getChannelData(channel);
-      pack[0].freq = 2 * Math.PI / audioCtx.sampleRate * (1200 + 5200 * Math.random());
+      pack[0].freq = urpThis.pack3.toneOneFrequency;
       pack[0].shift = audioCtx.sampleRate * .5;
-      pack[0].span = 1/audioCtx.sampleRate * Math.random();
+      pack[0].span = urpThis.pack3.toneOneSpan;
 
       pack[1].freq = 2 * Math.PI / audioCtx.sampleRate * (200 + 15200 * Math.random());
       pack[1].shift = audioCtx.sampleRate * (1.2 + 0.6 * Math.random());
@@ -47,27 +69,37 @@ var make3Packets = function() {
       for (var i = 0; i < frameCount; i++) {
         var sample = 0;
         for (var j = 0; j < pack.length; j++) {
-          sample += Math.sin(pack[j].freq * i) * Math.exp(-pack[j].span * Math.pow(i - pack[j].shift, 2))/2
+          sample += Math.sin(pack[j].freq * i) * Math.exp(-pack[j].span * Math.pow(i - pack[j].shift, 2))/2;
         }
         nowBuffering[i] = sample;
       }
     }
+
+    urpThis.pack3.xClass = (pack[2].shift < pack[1].shift ) ? "first" : "third";
+    if (Math.abs(pack[2].shift - pack[1].shift) === 0 ) 
+      urpThis.pack3.xClass = "second";
+
+    urpThis.pack3.yClass = (pack[2].freq < pack[1].freq ) ? "containerTop" : "containerBottom";
+    if (Math.abs(pack[2].freq - pack[1].freq) === 0 ) 
+      urpThis.pack3.yClass = "containerMid";
 
     var source = audioCtx.createBufferSource();
     source.buffer = myArrayBuffer;
     source.connect(audioCtx.destination);
     source.onended = function() {
       playing = false;
-    }
+    };
     source.start();
-  }
+  };
 
-  var play2Packs = function() {
+  var play2Packs = function(event) {
     if (playing) return;
-    packs = 2;
-    duration = 1;
-    frameCount = audioCtx.sampleRate * duration;
+    frameCount = audioCtx.sampleRate * urpThis.pack2.duration;
     playing = true;
+    var ur = 1.23;
+    var txt = document.createTextNode(ur);
+    urpThis.pack2.ur2pText.innerText = txt.textContent;
+
     // Fill the buffer with values between -1.0 and 1.0
     for (var channel = 0; channel < channels; channel++) {
       // This gives us the actual ArrayBuffer that contains the data
@@ -97,6 +129,12 @@ var make3Packets = function() {
     }
     source.start(0, 0, 1);
   }
+  
+  var pitchSpans = function(correct) {
+    var ur = correct
+    
+    
+  }
 
   button2.onclick = play2Packs;
   var buttons2 = document.getElementsByClassName("packs2");
@@ -107,7 +145,7 @@ var make3Packets = function() {
   allBlocks.addEventListener('click', play3Packs, false); 
 }
  
-var drawPacket = function () {
+this.drawPacket = function drawPacket() {
   //Writes a wave packet
 
   //if (typeof(WavePacket) == 'undefined') window.WavePacket = {};
