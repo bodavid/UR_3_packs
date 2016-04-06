@@ -21,7 +21,7 @@ allBlocks, container {
   background-color:#bada55;
   height: 200px;
 }
-.containerTop > div:nth-child(2) {
+.containerTop > div:nth-child(2), .containerBottom > div:nth-child(2)  {
 background-color:#ba55da;
 }
 .containerMid > div:nth-child(2) {
