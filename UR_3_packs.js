@@ -18,8 +18,10 @@ var UncertaintyRelationsPackets = function() {
   // Create a two second buffer at the
   // sample rate of the AudioContext
   var duration = 2;
-  var improveWhenCorrect = .7;
-  var worsenWhenWrong = 1.1;
+  var improveTimeWhenCorrect = .7;
+  var improveFreqWhenCorrect = .7;
+  var worsenTimeWhenWrong = 1.15;
+  var worsenFreqWhenWrong = 1.15;
   var frameCount = audioCtx.sampleRate * duration;
   var myArrayBuffer = audioCtx.createBuffer(channels, frameCount, audioCtx.sampleRate);
 
@@ -43,10 +45,8 @@ var UncertaintyRelationsPackets = function() {
     if (playing) return;
     frameCount = audioCtx.sampleRate * urpThis.pack3.duration;
     playing = true;
-    urpThis.pack3.urTime *= (event.target.classList.contains(urpThis.pack3.xClass)) ? improveWhenCorrect : worsenWhenWrong;
-    urpThis.pack3.urFrequency *= (event.target.parentNode.classList.contains(urpThis.pack3.yClass)) ? improveWhenCorrect : worsenWhenWrong;    
-//    var urTime = 1.53;
-//    var urFrequency = 1.53;
+    urpThis.pack3.urTime *= (event.target.classList.contains(urpThis.pack3.xClass)) ? improveTimeWhenCorrect : worsenTimeWhenWrong;
+    urpThis.pack3.urFrequency *= (event.target.parentNode.classList.contains(urpThis.pack3.yClass)) ? improveFreqWhenCorrect : worsenFreqWhenWrong;    
     var txt = document.createTextNode(Math.sqrt(urpThis.pack3.urFrequency * urpThis.pack3.urTime).toFixed(5));
     urpThis.pack3.ur3pText.innerText = txt.textContent;
     // Fill the buffer with values between -1.0 and 1.0
@@ -89,6 +89,8 @@ var UncertaintyRelationsPackets = function() {
     source.onended = function() {
       playing = false;
     };
+    // workaround for onended not firing always
+    setTimeout(function() {playing = false;}, 1000 * urpThis.pack3.duration)
     source.start();
   };
 
@@ -127,13 +129,9 @@ var UncertaintyRelationsPackets = function() {
     source.onended = function() {
       playing = false;
     }
+    // workaround for onended not firing always
+    setTimeout(function() {playing = false;}, 1000 * urpThis.pack2.duration)
     source.start(0, 0, 1);
-  }
-  
-  var pitchSpans = function(correct) {
-    var ur = correct
-    
-    
   }
 
   button2.onclick = play2Packs;
