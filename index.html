@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>UR Testing</title>
+    <title>Uncertainty Relation Testing</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
@@ -10,14 +10,18 @@
 
   </head>
   <body onload="myUrPacks = new UncertaintyRelationsPackets();">
+    <!--<div id="background">Draft version! Do not spread yet!</div>-->
     <div class="container containerTop">
-      Absolute sense of pitch uncertainty relation test
+      Absolute sense of frequency uncertainty relation test
     </div>
     <div class="container containerTop">
       Position the second and third pulse
     </div>
     <div  class="container containerTop">
       <button id="play3packs">Play three packets</button>
+    </div>
+    <div  class="container containerTop">
+      <button id="play3packsReplay">Replay sound</button> in case you missed hearing.
     </div>
     <div class="container">
       <span>Your three packets uncertainty relation is &nbsp;</span><span id="ur3p">2</span> 
@@ -63,16 +67,16 @@
       Determine the relation between two pulses
     </div>
     <div  class="container containerTop packs2">
-      <button id="pitchAndTimeDifference">Pitch and time difference</button>
+      <button id="FrequencyDifferentTimeDifferent">Frequency and time difference</button>
     </div>
     <div  class="container containerTop packs2">
-      <button id="pitchDifferenceSameTime">Pitch difference at the same time</button>
+      <button id="FrequencyDifferentTimeSame">Frequency difference at the same time</button>
     </div>
     <div  class="container containerTop packs2">
-      <button id="pitchSameTimeDifference">Pitch the same and time differences</button>
+      <button id="FrequencySameTimeDifferent">Frequency the same and time differences</button>
     </div>
     <div  class="container containerTop packs2">
-      <button id="pitchAndTimeSame">Pitch and time the same, like one tone only</button>
+      <button id="FrequencySameTimeSame">Frequency and time the same, like one tone only</button>
     </div>
     <div  class="container displayUr packs2">
       <span>Your two packets uncertainty relation is &nbsp;</span><span id="ur2p">2</span> 

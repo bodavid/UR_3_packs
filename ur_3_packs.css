@@ -8,6 +8,18 @@ and open the template in the editor.
     Author     : david
 */
 
+#background {
+   position: absolute;
+   top: 45vh;
+   left: -50vw;
+   width: 100vh;
+   z-index: -10;
+   overflow: hidden;
+   font-size: 10vmin;
+   transform: rotate(90deg);
+   opacity: 0.05;
+}
+
 .container {
   display:flex;
   justify-content:center;

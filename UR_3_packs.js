@@ -8,6 +8,7 @@ var UncertaintyRelationsPackets = function() {
   var urpThis = this
   var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   var button3 = document.getElementById('play3packs');
+  var button3Replay = document.getElementById('play3packsReplay');
   var button2 = document.getElementById('play2packs');
   var packs;
   var pack = [{}, {}, {}];
@@ -19,9 +20,9 @@ var UncertaintyRelationsPackets = function() {
   // sample rate of the AudioContext
   var duration = 2;
   var improveTimeWhenCorrect = .7;
-  var improveFreqWhenCorrect = .7;
+  var improveFrequencyWhenCorrect = .7;
   var worsenTimeWhenWrong = 1.15;
-  var worsenFreqWhenWrong = 1.15;
+  var worsenFrequencyWhenWrong = 1.15;
   var frameCount = audioCtx.sampleRate * duration;
   var myArrayBuffer = audioCtx.createBuffer(channels, frameCount, audioCtx.sampleRate);
 
@@ -29,7 +30,8 @@ var UncertaintyRelationsPackets = function() {
   
   this.pack2 = {
     duration: 1,
-    uncertainty: 2,
+    urTime: 2,
+    urFrequency: 2,
     ur2pText: document.getElementById("ur2p")
   };
   this.pack3 = {
@@ -45,8 +47,8 @@ var UncertaintyRelationsPackets = function() {
     if (playing) return;
     frameCount = audioCtx.sampleRate * urpThis.pack3.duration;
     playing = true;
+    urpThis.pack3.urFrequency *= (event.target.parentNode.classList.contains(urpThis.pack3.yClass)) ? improveFrequencyWhenCorrect : worsenFrequencyWhenWrong;    
     urpThis.pack3.urTime *= (event.target.classList.contains(urpThis.pack3.xClass)) ? improveTimeWhenCorrect : worsenTimeWhenWrong;
-    urpThis.pack3.urFrequency *= (event.target.parentNode.classList.contains(urpThis.pack3.yClass)) ? improveFreqWhenCorrect : worsenFreqWhenWrong;    
     var txt = document.createTextNode(Math.sqrt(urpThis.pack3.urFrequency * urpThis.pack3.urTime).toFixed(5));
     urpThis.pack3.ur3pText.innerText = txt.textContent;
     // Fill the buffer with values between -1.0 and 1.0
@@ -83,23 +85,40 @@ var UncertaintyRelationsPackets = function() {
     if (Math.abs(pack[2].freq - pack[1].freq) === 0 ) 
       urpThis.pack3.yClass = "containerMid";
 
-    var source = audioCtx.createBufferSource();
-    source.buffer = myArrayBuffer;
-    source.connect(audioCtx.destination);
-    source.onended = function() {
-      playing = false;
+    function playSound() {
+      button3Replay.disabled = true;
+      button3.disabled = true;
+      var source = audioCtx.createBufferSource();
+      source.buffer = myArrayBuffer;
+      source.connect(audioCtx.destination);
+      source.onended = function() {
+        playing = false;
+      };
+      // workaround for onended not firing always
+      setTimeout(function() {
+          playing = false;
+          button3Replay.disabled = false;
+          button3.disabled = false;
+        }, 1000 * urpThis.pack3.duration
+      );
+      source.start();
+    }
+    playSound();
+    button3Replay.onclick = function() {
+      if (playing) return;
+      playSound();
     };
-    // workaround for onended not firing always
-    setTimeout(function() {playing = false;}, 1000 * urpThis.pack3.duration)
-    source.start();
   };
 
   var play2Packs = function(event) {
     if (playing) return;
     frameCount = audioCtx.sampleRate * urpThis.pack2.duration;
     playing = true;
-    var ur = 1.23;
-    var txt = document.createTextNode(ur);
+    urpThis.pack2.urFrequency *= (event.target.id.indexOf(urpThis.pack2.correctBtnIdFrequency) === -1 ? improveFrequencyWhenCorrect : worsenFrequencyWhenWrong);
+    urpThis.pack2.urTime *= (event.target.id.indexOf(urpThis.pack2.correctBtnIdTime) === -1 ? improveTimeWhenCorrect : worsenTimeWhenWrong);
+//    urpThis.pack2.urFrequency *= (event.target.parentNode.classList.contains(urpThis.pack3.yClass)) ? improveFreqWhenCorrect : worsenFreqWhenWrong;    
+//    var ur = 1.23;
+    var txt = document.createTextNode(Math.sqrt(urpThis.pack2.urFrequency * urpThis.pack2.urTime).toFixed(5));
     urpThis.pack2.ur2pText.innerText = txt.textContent;
 
     // Fill the buffer with values between -1.0 and 1.0
@@ -122,6 +141,13 @@ var UncertaintyRelationsPackets = function() {
         nowBuffering[i] = sample;
       }
     }
+
+    urpThis.pack2.correctBtnIdFrequency = "Frequency" + (pack[0].freq == pack[1].freq ) ? "Same" : "Different";
+    urpThis.pack2.correctBtnIdTime = "Time" + (pack[0].shift == pack[1].shift ) ? "Same" : "Different";
+
+    if (Math.abs(pack[2].shift - pack[1].shift) === 0 ) 
+      urpThis.pack3.xClass = "second";
+
 
     var source = audioCtx.createBufferSource();
     source.buffer = myArrayBuffer;
