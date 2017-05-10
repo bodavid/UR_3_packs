@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-var UncertaintyRelationsPackets = function() {
+var UncertaintyRelationsPackets = function(domLocationIn) {
   var urpThis = this
   var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   var button3 = document.getElementById('play3packs');
@@ -27,7 +27,35 @@ var UncertaintyRelationsPackets = function() {
   var myArrayBuffer = audioCtx.createBuffer(channels, frameCount, audioCtx.sampleRate);
 
   var allBlocks = document.getElementsByClassName("allBlocks")[0];
-  
+//  allBlocks.style.display = "none";
+  /* Graphics */
+  var domLocation;
+  if (domLocationIn instanceof HTMLElement){
+    domLocation = domLocationIn;
+  } else if (typeof myinput == 'string'){
+    domLocation = document.getElementById(domLocationIn);
+  } else {
+    domLocation = document.body;
+  }
+  this.domLocation = domLocation;
+  var pixDiv = document.createElement("div");
+  var pixBtn = document.createElement("button");
+  var pixHr = document.createElement("hr");
+  let pixBtnText = document.createTextNode("Create graphical uncertainty test");
+  pixBtn.appendChild(pixBtnText);
+  domLocation.appendChild(pixHr);
+  pixDiv.appendChild(pixBtn);
+  pixDiv.style.justifyContent = "center";
+  pixDiv.style.display = "flex";
+  domLocation.appendChild(pixDiv);
+  document.addEventListener('DOMContentLoaded',
+    function() {
+      console.log`DOM loaded`;
+  });
+
+  /* end Graphics */
+
+
   this.pack2 = {
     duration: 1,
     urTime: 2,
@@ -73,7 +101,7 @@ var UncertaintyRelationsPackets = function() {
         for (var j = 0; j < pack.length; j++) {
           sample += Math.sin(pack[j].freq * i) * Math.exp(-pack[j].span * Math.pow(i - pack[j].shift, 2))/2;
         }
-        nowBuffering[i] = sample;
+        nowBuffering[i] = sample * 0.75 + 0.25*(-1 + 2*Math.random());
       }
     }
 
@@ -166,7 +194,53 @@ var UncertaintyRelationsPackets = function() {
       buttons2[i].addEventListener('click', play2Packs, false);
   }  
   button3.onclick = play3Packs;
-  allBlocks.addEventListener('click', play3Packs, false); 
+  allBlocks.addEventListener('click', play3Packs, false);
+
+  /* Graphics uncertainty */
+  let scaling = 1;
+  var addUCgraphics = function(canvas) {
+    let xr, yr, color = 0, rndBW, gaussian, gaussian_1, gaussian1, gaussK, gaussKexp;
+//    canvas.width = 0.8 * scaling * document.body.offsetWidth;
+//    canvas.height = 0.5 * scaling * document.body.offsetHeight;
+    let uncertain2d = canvas.getContext("2d");
+    uncertain2d.scale(1 / scaling, 1 / scaling);
+//    let image = uncertain2d.getImageData(0, 0, canvas.width, canvas.height);
+    let image = uncertain2d.createImageData(canvas.width, canvas.height);
+
+    let pixels = canvas.width * canvas.height;
+    let x = scaling * canvas.width;
+    let y = scaling * canvas.height;
+    let imageData = new Uint8ClampedArray(4 * pixels);
+
+    gaussKexp = -46;
+    gaussK = 16;
+    for(let yd = 0; yd < 4 * y; yd++){
+      for(let xd = 0; xd < x; xd++){
+        xr = 2 * xd / x - 1;
+        yr = 2 * yd / y - 1;
+        gaussian = Math.exp(gaussKexp * (xr * xr + yr * yr));
+        gaussian_1x = Math.exp(gaussKexp * (Math.pow(xr - .5, 2) + Math.pow(yr, 2)));
+        gaussian1x = Math.exp(gaussKexp * (Math.pow(xr + .5, 2) + Math.pow(yr, 2)));
+        rndBW = gaussian * gaussK * (0.5 * Math.sin(xr * 130) + .5) + (256 - gaussK) * Math.random() +
+         + gaussian_1x * gaussK * (0.5 * Math.sin(xr * 100) + .5) +
+         + gaussian1x * gaussK * (0.5 * Math.sin(xr * 160) + .5);
+        imageData[color++] = rndBW; //(xr+yr < .5) ? 255 * Math.random() : 63; // Red value
+        imageData[color++] = rndBW; // Green value
+        imageData[color++] = rndBW; //* Math.random(); // Blue value
+        imageData[color++] = 255; // Alpha value
+      }
+    }
+
+    image.data.set(imageData);
+    uncertain2d.putImageData(image, 0, 0);
+    return canvas;
+  }
+  urpThis.addUCgraphics = addUCgraphics;
+  let ucCanvas = document.createElement('canvas');
+  ucCanvas.width = Math.floor(0.9 * scaling * window.innerWidth);
+  ucCanvas.height = Math.floor(0.85 * scaling * window.innerHeight);
+  pixDiv.appendChild(ucCanvas);
+  pixBtn.addEventListener("click", () => {addUCgraphics(ucCanvas)}, false);
 }
  
 this.drawPacket = function drawPacket() {
@@ -261,6 +335,6 @@ this.drawPacket = function drawPacket() {
           context.lineTo(i, unit*y+xAxis);
       }
   }
-  WavePacket.Trig.init()    
+  WavePacket.Trig.init()
 };
 

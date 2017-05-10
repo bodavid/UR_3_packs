@@ -27,6 +27,7 @@ and open the template in the editor.
 
 allBlocks, container {
   display: fit-content;
+  display: none;
 }
 .containerTop > div, .containerBottom > div {
   margin:0px;
