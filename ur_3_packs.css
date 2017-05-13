@@ -21,13 +21,14 @@ and open the template in the editor.
 }
 
 .container {
-  display:flex;
+  display: none;
+/*  display:flex;*/
   justify-content:center;
 }
 
 allBlocks, container {
   display: fit-content;
-  display: none;
+  /*display: none;*/
 }
 .containerTop > div, .containerBottom > div {
   margin:0px;
@@ -57,3 +58,57 @@ background-color:#404040;
   justify-content:center;
 }
 
+.whosIsBeeping {
+  display: table-row; 
+  position: relative;
+  width: 750px;
+  height: 362px;
+}
+
+h2 p {
+  font-family: 'Vast Shadow';  
+}
+
+.birdLeft {
+  display: block;
+  position: relative;
+  text-indent: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  float: left;
+  left: 65%;
+  top: 90px;
+  width: 100px;
+  height: 82px;
+  background: url(bunting-dark-orange-silhouette.svg);
+  background-size: 100px 82px;  
+}
+
+.birdMiddle {
+  display: block;
+  position: relative;
+  text-indent: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  float: left;
+  left: 45%;
+  width: 100px;
+  height: 82px;
+  background: url(chickadee-black-silhouette.svg);
+  background-size: 100px 82px;
+}
+
+.birdRight {
+  display: block;
+  position: relative;
+  text-indent: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  float: left;
+  left: 45%;
+  top: 90px;
+  width: 100px;
+  height: 82px;
+  background: url(robin-lime-green-silhouette.svg);
+  background-size: 100px 82px;  
+}
