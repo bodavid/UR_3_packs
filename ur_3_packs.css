@@ -60,24 +60,35 @@ background-color:#404040;
 
 .whosIsBeeping {
   display: table-row; 
-  position: relative;
   width: 750px;
   height: 362px;
 }
 
-h2 p {
-  font-family: 'Vast Shadow';  
+@font-face {
+    font-family: 'Rock Salt';
+    src: url(http://fonts.googleapis.com/css?family=Rock+Salt);
+}
+
+h2 {}
+
+p {
+  font-family: 'Rock Salt';  
+  font-size: 14px;
+  font-style: normal;
+  font-variant: normal;
+  font-weight: 400;
+  line-height: 20px;
 }
 
 .birdLeft {
   display: block;
-  position: relative;
+  position: absolute;
   text-indent: 100%;
   white-space: nowrap;
   overflow: hidden;
   float: left;
-  left: 65%;
-  top: 90px;
+  left: 44%;
+  top: 290px;
   width: 100px;
   height: 82px;
   background: url(bunting-dark-orange-silhouette.svg);
@@ -86,7 +97,7 @@ h2 p {
 
 .birdMiddle {
   display: block;
-  position: relative;
+  position: absolute;
   text-indent: 100%;
   white-space: nowrap;
   overflow: hidden;
@@ -100,13 +111,13 @@ h2 p {
 
 .birdRight {
   display: block;
-  position: relative;
+  position: absolute;
   text-indent: 100%;
   white-space: nowrap;
   overflow: hidden;
   float: left;
-  left: 45%;
-  top: 90px;
+  left: 53%;
+  top: 290px;
   width: 100px;
   height: 82px;
   background: url(robin-lime-green-silhouette.svg);

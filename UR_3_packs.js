@@ -188,6 +188,64 @@ var UncertaintyRelationsPackets = function(domLocationIn) {
     source.start(0, 0, 1);
   }
 
+  this.pack2stereo = {
+    duration: 1,
+    urTime: 2,
+    urFrequency: 2,
+    channels: 2,
+    ur2pText: document.getElementById("beepBirdTimeDiff")
+  };
+
+  var play2PacksStereo = function(event) {
+    if (playing) return;
+    frameCount = audioCtx.sampleRate * urpThis.pack2stereo.duration;
+    playing = true;
+    urpThis.pack2stereo.urFrequency *= (event.target.id.indexOf(urpThis.pack2stereo.correctBtnIdFrequency) === -1 ? improveFrequencyWhenCorrect : worsenFrequencyWhenWrong);
+    urpThis.pack2stereo.urTime *= (event.target.id.indexOf(urpThis.pack2stereo.correctBtnIdTime) === -1 ? improveTimeWhenCorrect : worsenTimeWhenWrong);
+//    urpThis.pack2.urFrequency *= (event.target.parentNode.classList.contains(urpThis.pack3.yClass)) ? improveFreqWhenCorrect : worsenFreqWhenWrong;    
+//    var ur = 1.23;
+    var txt = document.createTextNode(Math.sqrt(urpThis.pack2stereo.urFrequency * urpThis.pack2stereo.urTime).toFixed(5));
+    urpThis.pack2stereo.ur2pText.innerText = txt.textContent;
+
+    // Fill the buffer with values between -1.0 and 1.0
+    for (var channel = 0; channel < urpThis.pack2stereo.channels; channel++) {
+      // This gives us the actual ArrayBuffer that contains the data
+      var nowBuffering = myArrayBuffer.getChannelData(channel);
+      pack[0].freq = 2 * Math.PI / audioCtx.sampleRate * (1200 + 5200 * Math.random());
+      pack[0].shift = audioCtx.sampleRate * .5;
+      pack[0].span = 1/audioCtx.sampleRate * Math.random();
+
+      pack[1].freq = 2 * Math.PI / audioCtx.sampleRate * (200 + 15200 * Math.random());
+      pack[1].shift = audioCtx.sampleRate * (0.2 + 0.6 * Math.random());
+      pack[1].span = 1/audioCtx.sampleRate * Math.random();
+
+      for (var i = 0; i < frameCount; i++) {
+        var sample = 0;
+        for (var j = 0; j < pack.length; j++) {
+          sample += Math.sin(pack[j].freq * i) * Math.exp(-pack[j].span * Math.pow(i - pack[j].shift, 2))/2
+        }
+        nowBuffering[i] = sample;
+      }
+    }
+
+    urpThis.pack2stereo.correctBtnIdFrequency = "Frequency" + (pack[0].freq == pack[1].freq ) ? "Same" : "Different";
+    urpThis.pack2stereo.correctBtnIdTime = "Time" + (pack[0].shift == pack[1].shift ) ? "Same" : "Different";
+
+    if (Math.abs(pack[2].shift - pack[1].shift) === 0 ) 
+      urpThis.pack3.xClass = "second";
+
+
+    var source = audioCtx.createBufferSource();
+    source.buffer = myArrayBuffer;
+    source.connect(audioCtx.destination);
+    source.onended = function() {
+      playing = false;
+    }
+    // workaround for onended not firing always
+    setTimeout(function() {playing = false;}, 1000 * urpThis.pack2stereo.duration)
+    source.start(0, 0, 1);
+  }
+
   button2.onclick = play2Packs;
   var buttons2 = document.getElementsByClassName("packs2");
   for (var i = 0; i < buttons2.length; i++) {
