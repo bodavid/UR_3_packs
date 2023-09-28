@@ -9,7 +9,18 @@
     <script src="./UR_3_packs.js"></script>
 
   </head>
-  <body onload="myUrPacks = new UncertaintyRelationsPackets();">
+  <body onload="{
+      let elements = {
+        play3packsBtn: document.getElementById('play3packs'),
+        play3packsReplayBtn: document.getElementById('play3packsReplay'),
+        play2packsBtn: document.getElementById('play2packs'),
+        allBlocks: document.getElementsByClassName('allBlocks')[0],
+        uncertaintyRelation2PacksSpan: document.getElementById('uncertaintyRelation2PacksSpan'),
+        uncertaintyRelation3PacksSpan: document.getElementById('uncertaintyRelation3PacksSpan'),
+        twoPacksButtons: document.getElementsByClassName('twoPacksButtons'),
+      }
+      myUrPacks = new UncertaintyRelationsPackets(elements);
+    }">
     <!--<div id="background">Draft version! Do not spread yet!</div>-->
     <div class="container containerTop">
       Absolute sense of frequency uncertainty relation test
@@ -24,7 +35,7 @@
       <button id="play3packsReplay">Replay sound</button> in case you missed hearing.
     </div>
     <div class="container">
-      <span>Your three packets uncertainty relation is &nbsp;</span><span id="ur3p">2</span> 
+      <span>Your three packets uncertainty relation is &nbsp;</span><span id="uncertaintyRelation3PacksSpan">2</span> 
     </div>
     <div class="container containerTop">
         <canvas id="sineCanvas" style="width: 100px; height: 100px;" width="100" height="100"></canvas>
@@ -66,20 +77,20 @@
     <div class="container containerTop">
       Determine the relation between two pulses
     </div>
-    <div  class="container containerTop packs2">
+    <div  class="container containerTop twoPacksButtons">
       <button id="FrequencyDifferentTimeDifferent">Frequency and time difference</button>
     </div>
-    <div  class="container containerTop packs2">
+    <div  class="container containerTop twoPacksButtons">
       <button id="FrequencyDifferentTimeSame">Frequency difference at the same time</button>
     </div>
-    <div  class="container containerTop packs2">
+    <div  class="container containerTop twoPacksButtons">
       <button id="FrequencySameTimeDifferent">Frequency the same and time differences</button>
     </div>
-    <div  class="container containerTop packs2">
+    <div  class="container containerTop twoPacksButtons">
       <button id="FrequencySameTimeSame">Frequency and time the same, like one tone only</button>
     </div>
-    <div  class="container displayUr packs2">
-      <span>Your two packets uncertainty relation is &nbsp;</span><span id="ur2p">2</span> 
+    <div  class="container displayUr twoPacksButtons">
+      <span>Your two packets uncertainty relation is &nbsp;</span><span id="uncertaintyRelation2PacksSpan">2</span> 
     </div>
     
     

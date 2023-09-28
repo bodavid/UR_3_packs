@@ -25,7 +25,7 @@ and open the template in the editor.
   justify-content:center;
 }
 
-allBlocks, container {
+.allBlocks, .container {
   display: fit-content;
 }
 .containerTop > div, .containerBottom > div {

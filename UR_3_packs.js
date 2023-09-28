@@ -1,15 +1,13 @@
 /* 
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+
  */
 
-var UncertaintyRelationsPackets = function() {
-  var urpThis = this
+var UncertaintyRelationsPackets = function(elements) {
+  var urpThis = this;
   var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  var button3 = document.getElementById('play3packs');
-  var button3Replay = document.getElementById('play3packsReplay');
-  var button2 = document.getElementById('play2packs');
+  var play3packsBtn = elements['play3packsBtn'];
+  var play3packsReplayBtn = elements['play3packsReplayBtn'];
+  var play2packsBtn = elements['play2packsBtn'];
   var packs;
   var pack = [{}, {}, {}];
   var playing = false;
@@ -26,20 +24,20 @@ var UncertaintyRelationsPackets = function() {
   var frameCount = audioCtx.sampleRate * duration;
   var myArrayBuffer = audioCtx.createBuffer(channels, frameCount, audioCtx.sampleRate);
 
-  var allBlocks = document.getElementsByClassName("allBlocks")[0];
+  var allBlocks = elements["allBlocks"];
   
   this.pack2 = {
     duration: 1,
     urTime: 2,
     urFrequency: 2,
-    ur2pText: document.getElementById("ur2p")
+    ur2pText: elements['uncertaintyRelation2PacksSpan']
   };
   this.pack3 = {
     duration: 2,
     urTime: 2,
     urFrequency: 2,
     packs: 3,
-    ur3pText: document.getElementById("ur3p"),
+    uncertaintyRelation3PacksSpan: elements['uncertaintyRelation3PacksSpan'],
     toneOneFrequency: 2 * Math.PI / audioCtx.sampleRate * (1200 + 5200 * Math.random()),
     toneOneSpan: 1/audioCtx.sampleRate * Math.random(),
   };
@@ -50,7 +48,7 @@ var UncertaintyRelationsPackets = function() {
     urpThis.pack3.urFrequency *= (event.target.parentNode.classList.contains(urpThis.pack3.yClass)) ? improveFrequencyWhenCorrect : worsenFrequencyWhenWrong;    
     urpThis.pack3.urTime *= (event.target.classList.contains(urpThis.pack3.xClass)) ? improveTimeWhenCorrect : worsenTimeWhenWrong;
     var txt = document.createTextNode(Math.sqrt(urpThis.pack3.urFrequency * urpThis.pack3.urTime).toFixed(5));
-    urpThis.pack3.ur3pText.innerText = txt.textContent;
+    urpThis.pack3.uncertaintyRelation3PacksSpan.innerText = txt.textContent;
     // Fill the buffer with values between -1.0 and 1.0
 
     for (var channel = 0; channel < channels; channel++) {
@@ -86,8 +84,8 @@ var UncertaintyRelationsPackets = function() {
       urpThis.pack3.yClass = "containerMid";
 
     function playSound() {
-      button3Replay.disabled = true;
-      button3.disabled = true;
+      play3packsReplayBtn.disabled = true;
+      play3packsBtn.disabled = true;
       var source = audioCtx.createBufferSource();
       source.buffer = myArrayBuffer;
       source.connect(audioCtx.destination);
@@ -97,14 +95,14 @@ var UncertaintyRelationsPackets = function() {
       // workaround for onended not firing always
       setTimeout(function() {
           playing = false;
-          button3Replay.disabled = false;
-          button3.disabled = false;
+          play3packsReplayBtn.disabled = false;
+          play3packsBtn.disabled = false;
         }, 1000 * urpThis.pack3.duration
       );
       source.start();
     }
     playSound();
-    button3Replay.onclick = function() {
+    play3packsReplayBtn.onclick = function() {
       if (playing) return;
       playSound();
     };
@@ -160,16 +158,18 @@ var UncertaintyRelationsPackets = function() {
     source.start(0, 0, 1);
   }
 
-  button2.onclick = play2Packs;
-  var buttons2 = document.getElementsByClassName("packs2");
-  for (var i = 0; i < buttons2.length; i++) {
-      buttons2[i].addEventListener('click', play2Packs, false);
+  play2packsBtn.onclick = play2Packs;
+  // var twoPacksButtons = document.getElementsByClassName("twoPacksButtons");
+  var twoPacksButtons = elements["twoPacksButtons"];
+  for (var i = 0; i < twoPacksButtons.length; i++) {
+      twoPacksButtons[i].addEventListener('click', play2Packs, false);
   }  
-  button3.onclick = play3Packs;
+  play3packsBtn.onclick = play3Packs;
   allBlocks.addEventListener('click', play3Packs, false); 
 }
- 
-this.drawPacket = function drawPacket() {
+
+//Not yet in use
+this._drawPacket = function _drawPacket() {
   //Writes a wave packet
 
   //if (typeof(WavePacket) == 'undefined') window.WavePacket = {};
@@ -238,7 +238,7 @@ this.drawPacket = function drawPacket() {
       context.restore();
 
   };
-  draw.t = 0;
+//  draw.t = 0;
 
 
   /**
